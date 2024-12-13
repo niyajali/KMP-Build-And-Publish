@@ -1,0 +1,36 @@
+name: 'Static Analysis Checks'
+description: 'Checks if the PR is ready to be merged'
+author: 'Kotlin Multiplatform Template'
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Java development environment
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'zulu'  # Use Zulu distribution of OpenJDK
+        java-version: '17'     # Use Java 17 version
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+
+    - name: Run Spotless
+      shell: bash
+      run: ./gradlew spotlessCheck
+
+    - name: Run Detekt
+      id: detekt_check
+      shell: bash
+      run: ./gradlew detekt
+
+    - name: Run Dependency Check
+      shell: bash
+      run: ./gradlew dependencyGuard
+
+    - name: Upload Detekt Reports
+      if: ${{ steps.detekt_check.outcome == 'success' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: detekt-reports
+        path: |
+          **/build/reports/detekt/detekt.md

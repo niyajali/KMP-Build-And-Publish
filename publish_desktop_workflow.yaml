@@ -1,0 +1,33 @@
+name: Build & Publish Desktop App
+
+on:
+  workflow_dispatch:
+    inputs:
+      desktop_package_name:
+        description: 'Name of the Android project module'
+        type: string
+        required: true
+
+jobs:
+  build_and_publish_desktop_app:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Build And Publish Desktop App
+        uses: build_and_publish_action@v1
+        with:
+          desktop_package_name: ${{ inputs.desktop_package_name }}
+          windows_signing_key: ${{ secrets.WINDOWS_SIGNING_KEY }}
+          windows_signing_password: ${{ secrets.WINDOWS_SIGNING_PASSWORD }}
+          windows_signing_certificate: ${{ secrets.WINDOWS_SIGNING_CERTIFICATE }}
+          macos_signing_key: ${{ secrets.MACOS_SIGNING_KEY }}
+          macos_signing_password: ${{ secrets.MACOS_SIGNING_PASSWORD }}
+          macos_signing_certificate: ${{ secrets.MACOS_SIGNING_CERTIFICATE }}
+          linux_signing_key: ${{ secrets.LINUX_SIGNING_KEY }}
+          linux_signing_password: ${{ secrets.LINUX_SIGNING_PASSWORD }}
+          linux_signing_certificate: ${{ secrets.LINUX_SIGNING_CERTIFICATE }}
